@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAXN 50005
-#define MAXL 23
+#define MAXN 100005
+#define MAXL 30
 
 int parent[MAXN][MAXL]; // MAXL = log(N) + k
 int level[MAXN];
@@ -18,9 +18,9 @@ void dfs(int u){
 	}
 }
 
-void init(int root){
+void init(int root,int n){
 
-	for(int i=0;i<MAXN;i++){
+	for(int i=0;i<n;i++){
 		parent[i][0] = -1;
 		level[i] = -1;
 	}
@@ -29,7 +29,7 @@ void init(int root){
 	dfs(root);
 	// set dp 
 	for(int j=1;j<MAXL;j++){
-		for(int i=0;i<MAXN;i++){
+		for(int i=0;i<n;i++){
 			parent[i][j] = parent[parent[i][j-1]][j-1]; // meu avo eh pai do meu pai
 		}
 	}
