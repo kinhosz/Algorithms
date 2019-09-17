@@ -18,7 +18,7 @@ public:
     }
   }
   bool isSameSet(int i,int j){
-    return (p[i] == p[j]);
+    return (unionFind(p[i]) == unionFind(p[j]));
   }
   void unionSet(int u,int v){
     if(rank[u] > rank[v]) swap(u,v);
