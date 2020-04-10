@@ -1,6 +1,3 @@
-#include <bits/stdc++.h>
-using namespace std;
-typedef long long ll;
 const ll INF = 1e9 + 7;
 
 class Dinic{
@@ -117,7 +114,3 @@ public:
 		return flow;
 	}
 };
-
-int main(){
-
-}
