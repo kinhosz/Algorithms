@@ -56,7 +56,6 @@ private:
 				}
 			}
 		}
-		cout << "oi" << endl;
 		g.clear();
 		swap(g,aux);
 	}
