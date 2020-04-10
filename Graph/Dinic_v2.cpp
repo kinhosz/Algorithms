@@ -5,18 +5,18 @@ const ll INF = 1e9 + 7;
 
 class Dinic{
 
-	struct Edge{
-		int v;
-		ll flow;
-		ll cap;
-	};
-
 	int source;
 	int sink;
 	int N;
 	vector<ll> level;
 	
 public:
+	struct Edge{
+		int v;
+		ll flow;
+		ll cap;
+	};
+
 	vector<vector<Edge>> g;
 
 	Dinic(int n){
@@ -37,7 +37,7 @@ public:
 		at.cap = cap;
 		g[u].push_back(at);
 	}
-
+private:
 	void residual(){
 
 		vector<vector<Edge>> aux;
@@ -104,7 +104,7 @@ public:
 		}
 		return ret;
 	}
-
+public:
 	ll run(){
 
 		ll flow = 0;
