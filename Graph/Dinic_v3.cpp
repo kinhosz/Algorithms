@@ -1,9 +1,6 @@
 const ll INF = 1e9 + 7;
 
 class Dinic{
-
-	int source;
-	int sink;
 	int N;
 	vector<ll> level;
 	
@@ -16,7 +13,8 @@ public:
 		int v;
 		ll cap;
 	};
-	
+	int source;
+	int sink;
 	vector<Edge> edge;
 	vector<vector<int>> g;
 
@@ -40,9 +38,9 @@ public:
 private:
 
 	bool BFS(){
-
-		level[source] = 0;
+		
 		for(int i=0;i<N;i++) level[i] = INF;
+		level[source] = 0;
 		queue<int> q;
 		q.push(source);
 
