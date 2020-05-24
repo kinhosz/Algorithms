@@ -75,6 +75,7 @@ private:
 			ret += f;
 			edge[i].cap -= f;
 			edge[x].cap += f;
+			if(flow == 0) break;
 		}
 		return ret;
 	}
