@@ -65,6 +65,7 @@ private:
 
 		ll ret = 0;
 		ll f = 0;
+		if(flow == 0) return 0;
 		if(u == sink) return flow;
 
 		for(auto i: g[u]){
@@ -75,7 +76,6 @@ private:
 			ret += f;
 			edge[i].cap -= f;
 			edge[x].cap += f;
-			if(flow == 0) break;
 		}
 		return ret;
 	}
