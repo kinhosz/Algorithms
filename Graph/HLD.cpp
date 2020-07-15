@@ -1,136 +1,140 @@
-#include <bits/stdc++.h>
-using namespace std;
-#define space " " 
-#define aps ''
-#define one 1
-#define two 2
-#define dif !=
 typedef long long ll;
-typedef pair<ll,ll> ii;
-vector<vector<ii>> g;
-const int maxn = 10005;
-int n_sz;
-vector<int> pos(maxn);
-vector<int> parent(maxn);
-vector<ll> tree(4*maxn);
-vector<int> sz(maxn);
-vector<int> heavy(maxn);
-vector<int> level(maxn);
-vector<int> head(maxn);
+typedef pair<int,int> ii;
 
-void update(int pos,int i,int j,int x,ll val){
+class HLD{
 
-	int esq = two*pos;
-	int dir = two*pos + one;
-	int mid = (i+j)/two;
+	vector<int> pos;
+	vector<int> parent;
+	vector<int> sz;
+	vector<int> level;
+	vector<int> head;
+	vector<vector<ii>> g;
 
-	if(i == j){
-		tree[pos] = val;
-		return ;
+	// segment tree
+	vector<int> tree;
+	vector<int> lazy;
+
+	int N;
+
+	void propagate(int pos,int i,int j){
+
 	}
 
-	if(x <= mid) update(esq,i,mid,x,val);
-	else update(dir,mid+one,j,x,val);
+	int query(int pos,int i,int j,int l,int r){
 
-	tree[pos] = max(tree[esq],tree[dir]);
-}
-
-ll query(int pos,int i,int j,int l,int r){
-
-	int esq = two*pos;
-	int dir = two*pos + one;
-	int mid = (i+j)/two;
-
-	if(i>r || j < l) return 0;
-	else if(i>= l && j <= r) return tree[pos];
-	ll ret = query(esq,i,mid,l,r);
-	ret = max(ret,query(dir,mid+one,j,l,r));
-
-	return ret;
-}
-
-void dfs(int u,int lv){
-
-	level[u] = lv;
-	sz[u] = one;
-
-	for(auto topo: g[u]){
-		int v = topo.first;
-		if(v == parent[u]) continue;
-		parent[v] = u;
-		dfs(v,lv+one);
-		sz[u] += sz[v];
-	}
-}
-
-void decompose(int u,int &x,bool keep){
-
-	if(keep){
-		head[u] = head[parent[u]];
-	}
-	else head[u] = u;
-
-	pos[u] = x++;
-
-	heavy[u] = -one;
-	for(auto topo: g[u]){
-		int v = topo.first;
-		if(v == parent[u]) continue;
-		if(sz[v] >= (sz[u] + one)/two) heavy[u] = v;
 	}
 
-	if(heavy[u] dif -one) decompose(heavy[u],x,true);
+	void update(int pos,int i,int j,int l,int r,int w){
 
-	for(auto topo: g[u]){
-		int v = topo.first;
-		if(v == parent[u] || v == heavy[u]) continue;
-		decompose(v,x,0);
-	} 
-}
+	}
+	
+	void dfs(int u,int lv){
 
-void hld_init(int n){
+		level[u] = lv;
+		sz[u] = 1;
+		int bigChild = 0;
 
-	n_sz = n;
-	parent[0] = -one;
-	dfs(0,0);
-	int x=0;
-	decompose(0,x,0);
-}
-
-void hld_update(int u,ll val){
-
-	update(one,0,n_sz-one,pos[u],val);
-}
-
-int LCA(int u,int v){
-
-	while(head[u] dif head[v]){
-		if(level[head[u]] > level[head[v]]) u = parent[head[u]];
-		else v = parent[head[v]];
+		for(int i=0;i<g[u].size();i++){
+			ii topo = g[u][i];
+			int v = topo.first;
+			if(v == parent[u]) continue;
+			parent[v] = u;
+			dfs(v,lv+1);
+			sz[u] += sz[v];
+			if(sz[v] > bigChild) swap(g[u][i],g[u][0]);
+			bigChild = max(bigChild,sz[v]);
+		}
 	}
 
-	return (level[u] < level[v]?u:v);
-}
+	void decompose(int u,int &x,bool keep){
 
-ll hld_find(int u,int v){
+		if(keep){
+			head[u] = head[parent[u]];
+		}
+		else head[u] = u;
+		
+		pos[u] = x++;
 
-	if(level[u] < level[v]) swap(u,v);
-	ll ret = 0;
-	while(head[u] dif head[v]){
-		ret = max(ret,query(one,0,n_sz-one,pos[head[u]],pos[u]));
-		u = parent[head[u]];
+		if(sz[u] > 1) decompose(g[u][0].first,x,true);
+
+		for(int i=1;i<g[u].size();i++){
+			ii topo = g[u][i];
+			int v = topo.first;
+			if(v == parent[u]) continue;
+			decompose(v,x,0);
+		} 
 	}
 
-	ret = max(ret,query(one,0,n_sz-one,pos[v]+one,pos[u]));
-	return ret;
-}
+public:
 
-ll hld_query(int u,int v){
+	HLD(int n){
+		N = n;
+		pos.resize(n,-1);
+		parent.resize(n,-1);
+		sz.resize(n,-1);
+		level.resize(n,-1);
+		head.resize(n,-1);
+		g.resize(n);
+		// segment tree
+		tree.resize(4*n+3,-1);
+		lazy.resize(4*n+3,-1);
+	}	
+	
+	void addEdge(int u,int v,int w){
+		g[u].push_back({v,w}); // vertex, weight
+	}
+	
+	void init(){
+		parent[0] = -1;
+		dfs(0,0);
+		int x=0;
+		decompose(0,x,0);
+	}
+	
+	int LCA(int u,int v){
+		while(head[u] != head[v]){
+			if(level[head[u]] > level[head[v]]) u = parent[head[u]];
+			else v = parent[head[v]];
+		}
+		return (level[u] < level[v]?u:v);
+	}
+	
+	int get(int u,int v){
+		int l = LCA(u,v);
+		int ret = 0;
+		int add;
+		while(head[u] != head[l]){
+			add = query(1,0,N-1,pos[head[u]],pos[u]);
+			u = parent[head[u]];
+		}
+		add = query(1,0,N-1,pos[l]+1,pos[u]);
+		while(head[v] != head[l]){
+			add = query(1,0,N-1,pos[head[v]],pos[v]);
+			v = parent[head[v]];
+		}
+		add = query(1,0,N-1,pos[l],pos[v]);
+		return ret;
+	}
+	
+	void flip(int u,int v,int w){
+		int l = LCA(u,v);
+		while(head[u] != head[l]){
+			update(1,0,N-1,pos[head[u]],pos[u],w);
+			u = parent[head[u]];
+		}
+		update(1,0,N-1,pos[l]+1,pos[u],w);
+		while(head[v] != head[l]){
+			update(1,0,N-1,pos[head[v]],pos[v],w);
+			v = parent[head[v]];
+		}
+		update(1,0,N-1,pos[l],pos[v],w);
+	}
 
-	int l = LCA(u,v);
-
-	ll ret = hld_find(u,l);
-	ret = max(ret,hld_find(v,l));
-
-	return ret;
-}
+	int lenPath(int u,int v){
+		int l = LCA(u,v);
+		int ret = level[u] - level[l];
+		ret += level[v] - level[l];
+		ret++;
+		return ret;
+	}
+};
