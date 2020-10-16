@@ -4,6 +4,7 @@ class SA{
 
 public:
 	vector<int> idx;
+	vector<int> lcp;
 	string word;
 
 	void process(string &text){
@@ -57,6 +58,28 @@ public:
 			}
 			swap(rank,novo);
 			k += k;
+		}
+
+		// lcp
+		rank.clear();
+		rank.resize(n);
+		lcp.resize(n-1);
+
+		for(int i=0;i<n;i++){
+			rank[idx[i]] = i;
+		}
+		k = 0;
+		for(int i=0;i<n;i++){
+			if(rank[i] == n-1){
+				k = 0;
+				continue;
+			}
+			int j = idx[rank[i] + 1];
+			while(i + k < n && j+k < n && text[i+k] == text[j+k]){
+				k++;
+			}
+			lcp[rank[i]] = k;
+			if(k) k--;
 		}
 	}
 
