@@ -5,6 +5,7 @@ class SA{
 public:
 	vector<int> idx;
 	vector<int> lcp;
+	vector<int> rank;
 	string word;
 
 	void process(string &text){
@@ -12,7 +13,7 @@ public:
 		text += '$';
 		word = text;
 		int n = text.size();
-		vector<int> rank(n);
+		rank.resize(n);
 
 		vector<ii> lista;
 		for(int i=0;i<n;i++){
