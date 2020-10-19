@@ -7,7 +7,7 @@ class HLD{
 	vector<int> parent;
 	vector<int> sz;
 	vector<int> level;
-	vector<int> head;
+	vector<int> head; // jaja
 	vector<vector<ii>> g;
 
 	// segment tree
@@ -80,7 +80,7 @@ public:
 		lazy.resize(4*n+3,-1);
 	}	
 	
-	void addEdge(int u,int v,int w){
+	void addEdge(int u,int v,int w=-1){
 		g[u].push_back({v,w}); // vertex, weight
 	}
 	
@@ -98,21 +98,30 @@ public:
 		}
 		return (level[u] < level[v]?u:v);
 	}
-	
+		
+	int join(int a,int b){
+
+		return a+b;
+	}
+
 	int get(int u,int v){
 		int l = LCA(u,v);
 		int ret = 0;
 		int add;
 		while(head[u] != head[l]){
 			add = query(1,0,N-1,pos[head[u]],pos[u]);
+			ret = join(add,ret);			
 			u = parent[head[u]];
 		}
 		add = query(1,0,N-1,pos[l]+1,pos[u]);
+		ret = join(add,ret);	
 		while(head[v] != head[l]){
 			add = query(1,0,N-1,pos[head[v]],pos[v]);
+			ret = join(add,ret);	
 			v = parent[head[v]];
 		}
-		add = query(1,0,N-1,pos[l],pos[v]);
+		add = query(1,0,N-1,pos[l],pos[v]);// para hld de arestas, mude isso aqui para pos[l]+1
+		ret = join(add,ret);	
 		return ret;
 	}
 	
@@ -127,7 +136,7 @@ public:
 			update(1,0,N-1,pos[head[v]],pos[v],w);
 			v = parent[head[v]];
 		}
-		update(1,0,N-1,pos[l],pos[v],w);
+		update(1,0,N-1,pos[l],pos[v],w); // para hld de arestas, mude isso aqui para pos[l]+1
 	}
 
 	int lenPath(int u,int v){
@@ -138,3 +147,22 @@ public:
 		return ret;
 	}
 };
+
+int main(){
+
+	HLD hld(n);// 0-based
+
+	for(int i=0;i<n;i++){
+		int u,v,w;
+		cin >> u >> v >> w;
+		hld.addEdge(u,v,w);
+		hld.addEdge(v,u,w);
+	}
+
+	hld.init();
+
+
+	hld.flip(u,v,w);
+
+	for(int i=0;i<n;i++) hld.flip(i,i,w);
+}
