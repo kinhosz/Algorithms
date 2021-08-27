@@ -18,7 +18,7 @@ private:
  		Node *r; // data of r node
  		Node(){}
  		Node(ll key, ll value): key(key),
- 		 value(value), prior(uniform_int_distribution<int>(0, 1e9+7)(rng)), l(NULL), r(NULL){}
+ 		 value(value), prior(uniform_int_distribution<int>()(rng)), l(NULL), r(NULL){}
 	};
 	typedef Node* node;
 
