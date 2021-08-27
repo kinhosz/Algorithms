@@ -33,7 +33,7 @@ private:
 			split(t->r, key, t->r, r), l = t;
 		}
 		else{
-			split(t->l, key, l, t->r), r = t;
+			split(t->l, key, l, t->l), r = t;
 		}
 
 		update(t);
