@@ -3,6 +3,7 @@ const ll INF = 1e9 + 7;
 class Dinic{
 	int N;
 	vector<ll> level;
+	vector<bool> dead;
 	
 public:
 	struct Edge{
@@ -40,6 +41,8 @@ private:
 	bool BFS(){
 		
 		for(int i=0;i<N;i++) level[i] = INF;
+		dead.clear();
+		dead.resize(N, false);
 		level[source] = 0;
 		queue<int> q;
 		q.push(source);
@@ -62,6 +65,8 @@ private:
 	}
 
 	ll maxflow(int u,ll flow){
+		
+		if(dead[u]) return 0;
 
 		ll ret = 0;
 		ll f = 0;
@@ -77,6 +82,9 @@ private:
 			edge[i].cap -= f;
 			edge[x].cap += f;
 		}
+		
+		if(ret == 0) dead[u] = true;
+		
 		return ret;
 	}
 public:
