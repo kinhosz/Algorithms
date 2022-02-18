@@ -3,9 +3,10 @@ struct eertree {
 	int n, last, sz;
 	vector<int> s, len, link;
 	vector<ll> qt;
+	const int SIGMA = 26;
 
 	eertree(int N) {
-		t.resize(N+2, vector<int>(26));
+		t.resize(N+2, vector<int>(SIGMA));
 		s = len = link = vector<int>(N+2);
 		qt = vector<ll>(N+2);
 		s[0] = -1;
