@@ -2,6 +2,7 @@ class Aho{
 	map<char, int> to[MAXN];
 	int link[MAXN], idx = 0, term[MAXN], exit[MAXN], sobe[MAXN];
 
+public:
 	void insert(string &s){
 		int at = 0;
 		for(char c: s){
@@ -19,11 +20,12 @@ class Aho{
 		link[0] = exit[0] = -1;
 		while(q.size()){
 			int i = q.front(); q.pop();
-			for(auto [c, j]: to[i]){
+			for(auto p: to[i]){
+				int c = p.first, j = p.second;
 				int l = link[i];
 				while(l != -1 and !to[l].count(c)) l = link[l];
 				link[j] = l == -1 ? 0 : to[l][c];
-				exit[j] = term[link[j]] ? exit[link[j]];
+				exit[j] = term[link[j]] ? link[j] : exit[link[j]];
 				if(exit[j]+1) sobe[j] += sobe[exit[j]];
 				q.push(j);
 			}
