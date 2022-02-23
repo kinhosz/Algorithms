@@ -1,6 +1,6 @@
 class Aho{
 	map<char, int> to[MAXN];
-	int link[MANX], idx = 0, term[MAXN], exit[MAXN], sobe[MAXN];
+	int link[MAXN], idx = 0, term[MAXN], exit[MAXN], sobe[MAXN];
 
 	void insert(string &s){
 		int at = 0;
