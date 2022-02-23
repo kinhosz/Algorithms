@@ -1,6 +1,6 @@
 class Aho{
 	vector<map<char, int>> to;
-	int link, term, exit, sobe; 
+	vector<int> link, term, exit, sobe; 
 	int idx = 0;
 
 public:
