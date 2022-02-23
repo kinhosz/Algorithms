@@ -1,8 +1,17 @@
 class Aho{
-	map<char, int> to[MAXN];
-	int link[MAXN], idx = 0, term[MAXN], exit[MAXN], sobe[MAXN];
+	vector<map<char, int>> to;
+	int link, term, exit, sobe; 
+	int idx = 0;
 
 public:
+	Aho(int maxn){
+		to.resize(maxn);
+		link.resize(maxn, 0);
+		term.resize(maxn, 0);
+		exit.resize(maxn, 0);
+		sobe.resize(maxn, 0);
+	}
+	
 	void insert(string &s){
 		int at = 0;
 		for(char c: s){
