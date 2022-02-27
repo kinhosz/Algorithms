@@ -17,7 +17,8 @@ public:
 		for(char c: s){
 			auto it = to[at].find(c);
 			if(it == to[at].end()) to[at][c] = ++idx;
-			else at = it->second;
+			it = to[at].find(c);
+			at = it->second;
 		}
 		term[at]++, sobe[at]++;
 	}
