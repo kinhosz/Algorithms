@@ -22,7 +22,7 @@ class MergeSortTree{
     nodes[p].add(v);
     if(l == r) return;
 
-    if(x < m) add(pl, l, m, x, v);
+    if(x <= m) add(pl, l, m, x, v);
     else add(pr, m+1, r, x, v);
   }
 
