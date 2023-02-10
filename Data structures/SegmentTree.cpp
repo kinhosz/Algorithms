@@ -1,8 +1,7 @@
 /*
 add: add a value to current node on tree
 join: join a query on lazy node
-merge: combine two nodes into one 
-*/
+merge: combine two nodes into one */
 class SegTree{
 	int N;
 	vector<ll> tree;
