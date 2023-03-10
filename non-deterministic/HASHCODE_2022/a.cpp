@@ -65,6 +65,7 @@ bool valid(ii pos) {
  
 ii get_new_random_wormhole() {
     int size = wormholes.size();
+    
     return wormholes[uniform_int_distribution<int>(0, size - 1)(rng)];
 }
  
@@ -78,7 +79,7 @@ void clear_path(vector<ii> &positions) {
  
 vector<ii> get_new_random_path(int id) {
     const int max_attempts = 10;
-    const double prob_choose = 0.95;
+    const double prob_choose = 1.0;
  
     if (uniform_real_distribution<double>(0, 1.0)(rng) > prob_choose)
         return vector<ii>();
@@ -114,13 +115,21 @@ vector<ii> get_new_random_path(int id) {
         } else {
             ii newPos;
             int dir, chosen = 0;
+
+            vector<int> dirs = {0, 1, 2, 3};
+            //(dirs.begin(), dirs.end(), rng);
+
+            for(auto dir: dirs){
+              newPos = make_pair((curr.first + dr[dir] + R) % R, (curr.second + dc[dir] + C) % C);
+              if(valid(newPos)) break;
+            }
  
-            do {
+            /*do {
                 dir = uniform_int_distribution<int>(0, 3)(rng);
                 newPos = make_pair((curr.first + dr[dir] + R) % R, (curr.second + dc[dir] + C) % C);
                 chosen |= (1 << dir);
-            } while (!valid(newPos) && chosen != 15);
- 
+            } while (!valid(newPos) && chosen != 15*/
+
             if (!valid(newPos)) {
                 clear_path(positions);
                 return vector<ii>();
@@ -144,6 +153,8 @@ vector<ii> get_new_random_path(int id) {
  
 vector<vector<ii>> get_initial_paths() {
     vector<vector<ii>> paths;
+    paths.resize(S);
+    return paths;
 
     vector<int> ids;
     for(int i=0;i<S;i++){
@@ -189,8 +200,8 @@ void undo_snake_path(const vector<ii>& snake_path) {
 pair<int, vector<ii>> get_neighborhood(const vector<vector<ii>>& snakes) {
     int S = (int)snakes.size();
     int id = uniform_int_distribution<int>(0, S - 1)(rng);
-    auto new_path = get_new_random_path(id);
     undo_snake_path(snakes[id]);
+    auto new_path = get_new_random_path(id);
     undo_snake_path(new_path);
     return make_pair(id, new_path);
 }
@@ -243,31 +254,51 @@ void sAnnealing(){
     L = numero maximo de sucessos por iteracoes
     alpha = fator de reducao da temperatura
     ******************************************/
-    double TEMP_INICIAL = 20.0;
+    double TEMP_INICIAL = 1000000.0;
     double alpha = 0.995;
     int M = 50000;
-    int P = 2500;
-    int print_per_iterations = M / 10;
-    double barreira = 1e-10;
+    int P = 10000;
+    int print_per_iterations = M / 100;
+    double barreira = 1e-5;
  
     vector<vector<ii>> S = get_initial_paths();
     ll total_score = solution_score(S);
     double T0 = TEMP_INICIAL;
     double T = T0;
+
+    ll last = 1;
+    int stoped = 0;
  
     for(int i=0;i<=M;i++){
+        int failed_state = 0;
+        int negatives_deltas = 0;
+        int negative_paths = 0;
+        int null_paths = 0;
+
         for(int j=0;j<=P;j++){
             auto auto_p = get_neighborhood(S);
             auto snake_id = auto_p.first;
             auto new_path = auto_p.second;
+
+            ll score_new_path = score(new_path);
+            if(score_new_path < 0){
+              score_new_path = 0;
+              new_path.clear();
+            }
  
-            ll delta = score(S[snake_id]) - score(new_path);
+            ll delta = score(S[snake_id]) - score_new_path;
+
+            if(score_new_path < 0) negative_paths++;
+            if(new_path.size() == 0) null_paths++;
+
+            if(delta > 0) negatives_deltas++;
  
             // energia negativa -> melhor solucao
             if(delta <= 0.0 || exp(-delta/T) > uniform_real_distribution<double>(0, 1.0)(rng)){
                 mark_snake_path(new_path);
                 S[snake_id].swap(new_path);
                 total_score -= delta;
+                if(delta > 0) failed_state++;
             } else {
                 mark_snake_path(S[snake_id]);
             }
@@ -282,9 +313,31 @@ void sAnnealing(){
         cerr << "total_score: " << total_score << '\n';
         cerr << "temperatura: " << T << '\n';
         cerr << "iteracoes: " << i << "/" << M << "\n";
+        if(negatives_deltas == 0) negatives_deltas++;
+        cerr << "max_local factor: " << (double)failed_state/negatives_deltas << '\n';
+
+        double aux = (double) negative_paths / (P+1);
+        cerr << "negative_paths = " << aux << '\n';
+        aux = (double) null_paths / (P+1);
+        cerr << "null_paths = " << aux << '\n';
+
+        if(last == total_score){
+          stoped++;
+        }
+        else{
+          stoped = 0;
+        }
+
+        if(stoped >= 25) break;
+
+        double perc = (double) total_score / last - 1.0;
+        perc *= 100;
+        cerr << "crescimento = " << perc << "%\n";
+        last = total_score;
  
-        if (i % print_per_iterations == 0)
+        if (i % print_per_iterations == 0){
             print_solution(S);
+        }
     }
     print_solution(S);
 }
